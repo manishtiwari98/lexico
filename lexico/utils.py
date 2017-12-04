@@ -3,14 +3,21 @@ from dateutil.parser import parse
 import os
 import json
 import sqlite3
-
 import arrow
 from wordnik import *
 from tabulate import tabulate
-
+import requests
 from .errors import ConfigFileError
 
 API_URL = 'http://api.wordnik.com/v4'
+
+def incorrect_key(API_KEY):
+    check_url='http://api.wordnik.com/v4/word.json/cat/definitions?api_key={}'.format(API_KEY)
+    if(requests.get(check_url).status_code==200):
+        return False
+    return True
+
+
 
 def create_word_api(API_KEY):
     client = swagger.ApiClient(API_KEY, API_URL)
