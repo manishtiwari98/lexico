@@ -54,8 +54,13 @@ def init():
                'Visit http://www.wordnik.com/signup to SignUp.')
         # Step 01: Save the API Key
         api_key = click.prompt('Enter your Wordnik API key').strip()
-        while(incorrect_key(api_key)):
-            api_key = click.prompt('API key Entered is Incorrect.Try Again.....\nEnter your Wordnik API key').strip()
+        if(incorrect_key(api_key)):
+            while click.confirm('API key Entered is Incorrect.\nWould you like to re-enter your API key?',abort=True):
+                  api_key = click.prompt('Enter your Wordnik API key').strip()
+                  if not incorrect_key(api_key):
+                      break
+
+
             
         save_status = save_api_key(api_key)
         if save_status:
