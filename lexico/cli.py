@@ -2,20 +2,9 @@ import sys
 import click
 
 from .errors import ConfigFileError
-from .utils import fetch_word, save_api_key, load_api_key, save_word, get_words, check_initialization, tabulate_words, initialize_db, initialize_application, has_api_key, has_db, format_words,incorrect_key
+from .utils import fetch_word, save_api_key, load_api_key, save_word, get_words, check_initialization, tabulate_words, initialize_db, initialize_application, has_api_key, has_db, format_words,is_valid_key
 
-def get_api_key():
-    api_key=click.prompt('\nEnter your Wordnik API key').strip()
-    if(incorrect_key(api_key)):
-        click.secho('\nEntered API_KEY is incorret!',bg='white', fg='red')
-        cont=click.confirm('Would you like to re-enter your API key?',default=True)
-        if cont:
-            api_key=get_api_key()
-        else:
-            click.secho('\nInitialization process failed!',bg='white', fg='red')
-            click.secho('Visit http://www.wordnik.com and get your API_KEY.',bg='white', fg='red')
-            sys.exit(1)
-    return api_key
+
         
 
 
@@ -67,15 +56,22 @@ def init():
                ' to provide a Wordnik API key.\n' \
                'Visit http://www.wordnik.com/signup to SignUp.')
         # Step 01: Save the API Key
-        api_key = get_api_key()
+        api_key = click.prompt('Enter your Wordnik API key').strip()
+        while is_valid_key(api_key)==False:
+            click.secho('The API key you have entered is incorrect!',fg='red',bold=True)
+            reenter=click.confirm("Would you like to re-enter API_KEY:",default=True)
+            if reenter==False:
+                click.secho("Authenciation Failed! Visit http://www.wordnik.com/ to get your API_KEY ",fg="yellow",bold=True)
+                exit()
+            api_key = click.prompt('Enter your Wordnik API key').strip()
 
 
             
         save_status = save_api_key(api_key)
         if save_status:
-            click.echo('Your API Key has been saved successfully\n')
+            click.secho('Your API Key has been saved successfully\n',fg='green')
         else:
-            click.echo('There is some issue with saving your API key. Kindly retry.')
+            click.secho('There is some issue with saving your API key. Kindly retry.',fg='yellow')
 
     is_db_initialized = has_db()
     if not is_db_initialized:

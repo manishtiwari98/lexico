@@ -9,22 +9,20 @@ from tabulate import tabulate
 from .errors import ConfigFileError
 
 API_URL = 'http://api.wordnik.com/v4'
-
-def incorrect_key(API_KEY):
-    check_url='http://api.wordnik.com/v4/word.json/cat/definitions?api_key={}'.format(API_KEY)
-    try:
-        if(swagger.urllib.request.urlopen(check_url).getcode()==200):
-            return False
-        return True
-    except:
-        return True
-
-
-
 def create_word_api(API_KEY):
     client = swagger.ApiClient(API_KEY, API_URL)
     wordApi = WordApi.WordApi(client)
     return wordApi
+
+def is_valid_key(API_KEY):
+    client = swagger.ApiClient(API_KEY, API_URL)
+    account=AccountApi.AccountApi(client)
+    try:
+        result=account.getApiTokenStatus()
+        return result.valid
+    except:
+        return False
+
 
 
 HOME_DIR = os.path.expanduser('~') # User's Home Directory
